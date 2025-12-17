@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - المكتبة المتكاملة</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-style.css') }}">
+</head>
+
+<body>
+    <script>
+        // حماية الصفحة: التحقق من تسجيل دخول المدير
+        function checkAdminAuth() {
+            const localAuth = localStorage.getItem('adminAuth');
+            const sessionAuth = sessionStorage.getItem('adminAuth');
+
+            if (!localAuth && !sessionAuth) {
+                // المستخدم غير مسجل دخول، إعادة التوجيه لصفحة تسجيل الدخول
+                window.location.href = "{{ url_for('admin_login') }}";
+                return false;
+            }
+
+            const authData = JSON.parse(localAuth || sessionAuth);
+            if (!authData.isLoggedIn) {
+                window.location.href = "{{ url_for('admin_login') }}";
+                return false;
+            }
+
+            return true;
+        }
+
+        // فحص الصلاحية عند تحميل الصفحة
+        if (!checkAdminAuth()) {
+            document.body.style.display = 'none';
+        }
+    </script>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="شعار المكتبة المتكاملة"
+                    class="logo-image" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px;">
+                <h2>لوحة التحكم</h2>
+                <p style="font-size: 0.875rem; color: #94a3b8; margin-top: 0.5rem;" id="adminUsername"></p>
+            </div>
+            <nav class="admin-nav">
+                <a href="{{ url_for('index') }}" class="nav-item">🏠 الصفحة الرئيسية</a>
+                <a href="#" class="nav-item active" onclick="showSection('products')">📦 إدارة المنتجات</a>
+                <a href="#" class="nav-item" onclick="showSection('categories')">📂 إدارة الأقسام</a>
+                <a href="#" class="nav-item" onclick="showSection('ads')">🎨 الإعلانات والعروض</a>
+                <a href="#" class="nav-item" onclick="showSection('orders')">🛒 الطلبات</a>
+                <a href="#" class="nav-item" onclick="logout()" style="color: #ef4444; margin-top: auto;">🚪 تسجيل
+                    الخروج</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <header class="admin-header">
+                <h1 id="sectionTitle">إدارة المنتجات</h1>
+                <div class="header-actions">
+                    <button class="btn btn-primary" onclick="showAddProductModal()">
+                        ➕ إضافة منتج جديد
+                    </button>
+                </div>
+            </header>
+
+            <!-- Products Section -->
+            <section id="productsSection" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-info">
+                            <h3 id="totalProducts">0</h3>
+                            <p>إجمالي المنتجات</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📂</div>
+                        <h3 id="totalCategories">6</h3>
+                        <p>الأقسام</p>
+                    </div>
+                </div>
+
+                <div class="products-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الصورة</th>
+                                <th>اسم المنتج</th>
+                                <th>السعر</th>
+                                <th>القسم</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Products will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Ads Section -->
+            <section id="adsSection" class="content-section">
+                <div class="ads-container">
+                    <div class="section-card">
+                        <h2>الصور الإعلانية</h2>
+                        <button class="btn btn-primary" onclick="showAddAdModal()">➕ إضافة إعلان</button>
+                        <div id="adsList" class="ads-list"></div>
+                    </div>
+
+                    <div class="section-card">
+                        <h2>العروض الخاصة</h2>
+                        <button class="btn btn-primary" onclick="showAddOfferModal()">➕ إضافة عرض</button>
+                        <div id="offersList" class="offers-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Categories Management Section -->
+            <section id="categoriesSection" class="content-section">
+                <div class="section-card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h2>إدارة الأقسام</h2>
+                        <button class="btn btn-primary" onclick="showAddCategoryModal()">➕ إضافة قسم جديد</button>
+                    </div>
+                    <div id="categoriesList" class="categories-list"></div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="ordersSection" class="content-section">
+                <div class="orders-container">
+                    <h2>الطلبات الأخيرة</h2>
+                    <p style="color: #94a3b8; text-align: center; padding: 2rem;">
+                        لا توجد طلبات حالياً
+                    </p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">إضافة منتج جديد</h2>
+                <button class="close-btn" onclick="closeProductModal()">×</button>
+            </div>
+            <form id="productForm" onsubmit="saveProduct(event)">
+                <input type="hidden" id="productId">
+
+                <div class="form-group">
+                    <label>اسم المنتج *</label>
+                    <input type="text" id="productName" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>السعر (ريال يمني) *</label>
+                        <input type="number" id="productPrice" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>القسم *</label>
+                        <select id="productCategory" required>
+                            <!-- Categories will be loaded dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>صورة المنتج</label>
+                    <input type="file" id="productImageFile" accept="image/*" onchange="handleImageUpload(event)">
+                    <small style="color: #64748b; display: block; margin-top: 0.5rem;">أو أدخل رابط الصورة أو رمز
+                        تعبيري</small>
+                </div>
+
+                <div class="form-group">
+                    <label>رابط الصورة أو الرمز التعبيري</label>
+                    <input type="text" id="productImage" placeholder="مثال: 📚 أو https://example.com/image.jpg">
+                    <div id="imagePreview" style="margin-top: 1rem; display: none;">
+                        <img id="previewImg"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #e2e8f0;" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductModal()">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ المنتج</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Advertisement Modal -->
+    <div id="adModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="adModalTitle">إضافة إعلان جديد</h2>
+                <button class="close-btn" onclick="closeAdModal()">×</button>
+            </div>
+            <form id="adForm" onsubmit="saveAd(event)">
+                <input type="hidden" id="adIndex">
+
+                <div class="form-group">
+                    <label>عنوان الإعلان *</label>
+                    <input type="text" id="adTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label>وصف الإعلان *</label>
+                    <textarea id="adDescription" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>صورة الإعلان</label>
+                    <input type="file" id="adImageFile" accept="image/*" onchange="handleAdImageUpload(event)">
+                    <small style="color: #64748b; display: block; margin-top: 0.5rem;">أو أدخل رابط الصورة أو رمز
+                        تعبيري</small>
+                </div>
+
+                <div class="form-group">
+                    <label>رابط الصورة أو الرمز التعبيري</label>
+                    <input type="text" id="adIcon" placeholder="مثال: 🎉 أو https://example.com/image.jpg">
+                    <div id="adImagePreview" style="margin-top: 1rem; display: none;">
+                        <img id="adPreviewImg"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #e2e8f0;" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAdModal()">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ الإعلان</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Offer Modal -->
+    <div id="offerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="offerModalTitle">إضافة عرض جديد</h2>
+                <button class="close-btn" onclick="closeOfferModal()">×</button>
+            </div>
+            <form id="offerForm" onsubmit="saveOffer(event)">
+                <input type="hidden" id="offerIndex">
+
+                <div class="form-group">
+                    <label>عنوان العرض *</label>
+                    <input type="text" id="offerTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label>تفاصيل العرض *</label>
+                    <textarea id="offerDiscount" rows="3" required
+                        placeholder="مثال: خصم 20% على جميع الأقلام"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>صورة العرض</label>
+                    <input type="file" id="offerImageFile" accept="image/*" onchange="handleOfferImageUpload(event)">
+                    <small style="color: #64748b; display: block; margin-top: 0.5rem;">أو أدخل رابط الصورة أو رمز
+                        تعبيري</small>
+                </div>
+
+                <div class="form-group">
+                    <label>رابط الصورة أو الرمز التعبيري</label>
+                    <input type="text" id="offerIcon" placeholder="مثال: 🎁 أو https://example.com/image.jpg">
+                    <div id="offerImagePreview" style="margin-top: 1rem; display: none;">
+                        <img id="offerPreviewImg"
+                            style="max-width: 150px; max-height: 150px; border-radius: 8px; border: 2px solid #e2e8f0;" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeOfferModal()">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ العرض</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="categoryModalTitle">إضافة قسم جديد</h2>
+                <button class="close-btn" onclick="closeCategoryModal()">×</button>
+            </div>
+            <form id="categoryForm" onsubmit="saveCategory(event)">
+                <input type="hidden" id="categoryIndex">
+
+                <div class="form-group">
+                    <label>اسم القسم *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+
+                <div class="form-group">
+                    <label>أيقونة القسم (رمز تعبيري)</label>
+                    <input type="text" id="categoryIcon" placeholder="مثال: ✏️">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ القسم</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+
+</html>
