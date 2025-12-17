@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الشعار</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        img {
+            display: block;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            padding: 10px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>اختبار عرض الشعار</h1>
+        
+        <div class="info">
+            <strong>محاولة 1:</strong> مسار نسبي بسيط
+        </div>
+        <img src="logo.jpg" alt="شعار 1" width="100" onerror="this.alt='❌ فشل التحميل - محاولة 1'">
+        
+        <div class="info">
+            <strong>محاولة 2:</strong> مسار نسبي مع ./
+        </div>
+        <img src="./logo.jpg" alt="شعار 2" width="100" onerror="this.alt='❌ فشل التحميل - محاولة 2'">
+        
+        <div class="info">
+            <strong>محاولة 3:</strong> مسار كامل
+        </div>
+        <img src="file:///C:/Users/aboaml/Desktop/تجارب/stationery-simple/logo.jpg" alt="شعار 3" width="100" onerror="this.alt='❌ فشل التحميل - محاولة 3'">
+        
+        <div class="info" style="margin-top: 30px; background: #fff3cd;">
+            <strong>تعليمات:</strong>
+            <ol>
+                <li>افتح هذا الملف في المتصفح</li>
+                <li>إذا ظهرت أي صورة، فهذا يعني أن المسار صحيح</li>
+                <li>إذا ظهرت رسالة "فشل التحميل" لجميع المحاولات، فهناك مشكلة في الصورة نفسها</li>
+            </ol>
+        </div>
+        
+        <div class="info" style="background: #ffebee;">
+            <strong>معلومات عن الصورة المتوقعة:</strong><br>
+            📁 المسار: C:\Users\aboaml\Desktop\تجارب\stationery-simple\logo.jpg<br>
+            📏 الحجم: متغير<br>
+            🖼️ النوع: JPG
+        </div>
+    </div>
+    
+    <script>
+        // طباعة المسار الحالي للصفحة
+        console.log('المسار الحالي للصفحة:', window.location.href);
+        console.log('المجلد الحالي:', window.location.pathname);
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المكتبة المتكاملة - للخدمات المدرسية والجامعة والطباعة والتصوير</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="شعار المكتبة المتكاملة"
+                    class="logo-image"
+                    onerror="console.error('فشل تحميل الشعار'); this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <span class="logo-icon" style="display: none;">📚</span>
+                <div>
+                    <h1>المكتبة المتكاملة</h1>
+                    <p>للمستلزمات المدرسية والجامعة والطباعة والتصوير</p>
+                </div>
+            </div>
+            <nav>
+                <a href="#home">الرئيسية</a>
+                <a href="#products">المنتجات</a>
+                <a href="#categories">الأقسام</a>
+                <a href="#offers">العروض</a>
+                <a href="{{ url_for('admin_login') }}" style="color: #ef4444;">⚙️ الادارة</a>
+            </nav>
+            <button class="cart-btn" onclick="toggleCart()">
+                🛒
+                <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h2>مرحباً بكم في المكتبة المتكاملة</h2>
+            <p>خدمات متكاملة للمدارس والجامعات - قرطاسية، طباعة، تصوير وأكثر</p>
+            <div class="hero-btns">
+                <a href="#products" class="btn btn-primary">تصفح المنتجات</a>
+                <a href="#contact" class="btn btn-secondary">اتصل بنا</a>
+            </div>
+            <div class="hero-features">
+                <div class="feature-card">
+                    <div class="feature-icon">✨</div>
+                    <h3>منتجات عالية الجودة</h3>
+                    <p>نوفر أفضل المنتجات من ماركات موثوقة</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>أسعار تنافسية</h3>
+                    <p>عروض وخصومات على جميع المنتجات</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>خدمة متميزة</h3>
+                    <p>رضاكم هو هدفنا الأول</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advertisements Section -->
+    <section class="advertisements" id="ads">
+        <div class="container">
+            <h2 class="section-title">📢 الإعلانات</h2>
+            <div class="ads-slider" id="adsSlider">
+                <!-- Ads will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section class="offers" id="offers">
+        <div class="container">
+            <h2 class="section-title">🎁 العروض الخاصة</h2>
+            <div class="offers-grid" id="offersGrid">
+                <!-- Offers will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories" id="categories">
+        <div class="container">
+            <h2 class="section-title">أقسام المنتجات</h2>
+            <div class="categories-grid">
+                <button class="category-btn active" onclick="filterProducts('الكل')">الكل</button>
+                <button class="category-btn" onclick="filterProducts('أقلام')">✏️ أقلام</button>
+                <button class="category-btn" onclick="filterProducts('دفاتر')">📓 دفاتر</button>
+                <button class="category-btn" onclick="filterProducts('أدوات رسم')">🎨 أدوات رسم</button>
+                <button class="category-btn" onclick="filterProducts('أدوات قص')">✂️ أدوات قص</button>
+                <button class="category-btn" onclick="filterProducts('حقائب')">🎒 حقائب</button>
+                <button class="category-btn" onclick="filterProducts('آلات حاسبة')">🔢 آلات حاسبة</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2 class="section-title" id="productsTitle">جميع المنتجات</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h3>🛒 سلة المشتريات</h3>
+                <button class="close-cart-btn" onclick="toggleCart()">×</button>
+            </div>
+            <div class="cart-items" id="cartItems">
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">🛒</div>
+                    <p>سلة المشتريات فارغة</p>
+                    <p style="font-size: 0.875rem; margin-top: 0.5rem;">أضف بعض المنتجات للبدء</p>
+                </div>
+            </div>
+            <div class="cart-footer" id="cartFooter" style="display: none;">
+                <div class="cart-total">
+                    <span class="cart-total-label">الإجمالي:</span>
+                    <span class="cart-total-amount" id="cartTotal">0 ريال</span>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">إتمام الشراء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>المكتبة المتكاملة</h3>
+                <p>وجهتك المثالية للخدمات المدرسية والجامعية والطباعة والتصوير. نوفر جميع احتياجاتك بأفضل الأسعار وأعلى
+                    جودة.</p>
+            </div>
+            <div class="footer-section">
+                <h3>تواصل معنا</h3>
+                <div class="contact-item">📞 +9677780060707</div>
+                <div class="contact-item">✉️ info@library-store.com</div>
+                <div class="contact-item">📍 عمران - خمر - الشارع العام </div>
+            </div>
+            <div class="footer-section">
+                <h3>تابعنا</h3>
+                <div class="social-links">
+                    <a href="#" class="social-btn facebook">f</a>
+                    <a href="#" class="social-btn instagram">📷</a>
+                    <a href="#" class="social-btn twitter">🐦</a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 المكتبة المتكاملة. جميع الحقوق محفوظة.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

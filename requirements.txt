@@ -1,0 +1,9 @@
+flask
+flask-cors
+flask-sqlalchemy
+kivy
+kivymd
+requests
+arabic-reshaper
+python-bidi
+reportlab
