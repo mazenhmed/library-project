@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 flask
 flask-cors
 flask-sqlalchemy
@@ -8,3 +9,15 @@ arabic-reshaper
 python-bidi
 reportlab
 gunicorn
+=======
+flask
+flask-cors
+flask-sqlalchemy
+kivy
+kivymd
+requests
+arabic-reshaper
+python-bidi
+reportlab
+gunicorn
+>>>>>>> 453bbca2cf325e53ae1634d95f2599af6b17059d

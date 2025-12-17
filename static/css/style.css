@@ -752,6 +752,7 @@ footer {
 }
 
 /* Responsive */
+<<<<<<< HEAD
 /* Responsive */
 @media (max-width: 768px) {
     .header-content {
@@ -868,4 +869,33 @@ footer {
     .logo h1 {
         font-size: 1rem;
     }
+=======
+@media (max-width: 768px) {
+    .header-content {
+        padding: 1rem;
+    }
+
+    nav {
+        display: none;
+        /* Mobile menu to be implemented if needed */
+    }
+
+    .hero h2 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 1rem;
+    }
+
+    .product-image {
+        height: 180px;
+        padding: 1rem;
+    }
+>>>>>>> 453bbca2cf325e53ae1634d95f2599af6b17059d
 }
